@@ -18,8 +18,19 @@ def my_each_with_index(array)
   array
 end
 
+def my_select(array)
+    i = 0
+    select_array = []
+    while i < array.size
+         select_array << yield(array[i])
+         i += 1
+    end
+    select_array
+end
+
 
 array = %w[hello hi heee]
+my_select(array) do |k| puts "my select #{k}" end
 my_each_with_index(array) do |v, i|
   puts "#{v}#{i}"
 end
