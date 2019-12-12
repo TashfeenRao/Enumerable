@@ -1,39 +1,39 @@
 # frozen_string_literal: true
 
 module Enumerable
-  def my_each(array)
+  def my_each
     i = 0
-    while i < array.size
-      yield array[i]
+    while i < size
+      yield self[i]
       i += 1
     end
     array
   end
 
-  def my_each_with_index(array)
+  def my_each_with_index
     i = 0
-    while i < array.size
-      yield(array[i], i)
+    while i < size
+      yield(self[i], i)
       i += 1
     end
     array
   end
 
-  def my_select(array)
+  def my_select
     i = 0
     select_array = []
-    while i < array.size
-      select_array << yield(array[i])
+    while i < size
+      select_array << yield(self[i])
       i += 1
     end
     select_array
   end
 
-  def my_all(array)
+  def my_all?
     i = 0
     result = nil
-    while i < array.size
-      result = if yield(array[i])
+    while i < size
+      result = if yield(self[i])
                  true
                else
                  false
@@ -41,14 +41,14 @@ module Enumerable
       i += 1
     end
 
-    puts result
+    result
   end
 
-  def my_any(array)
+  def my_any?
     i = 0
     result = nil
-    while i < array.size
-      result = if yield(array[i])
+    while i < size
+      result = if yield(self[i])
                  true
                else
                  false
@@ -56,14 +56,14 @@ module Enumerable
       i += 1
     end
 
-    puts result
+    result
   end
 
-  def my_none(array)
+  def my_none?
     i = 0
     result = nil
-    while i < array.size
-      result = if yield(array[i])
+    while i < size
+      result = if yield(self[i])
                  false
                else
                  true
@@ -71,28 +71,32 @@ module Enumerable
       i += 1
     end
 
-    puts result
+    result
   end
 
-  def my_count(array)
+  def my_count
     i = 0
     count = 0
-    while i < array.size
-      result = (count += 1 if yield(array[i]))
+    while i < size
+      count += 1 if yield(self[i])
       i += 1
     end
 
-    puts count
+    count
   end
 
-  def my_map(array)
-    i = 0
-    new_map = []
-    while i < array.size
-      new_map << yield(array[i])
-      i += 1
+  def my_map
+    if block_given?
+      i = 0
+      new_map = []
+      while i < size
+        new_map << yield(self[i])
+        i += 1
+      end
+      new_map
+    else
+      puts 'block is not given'
     end
-    new_map
   end
 
   def my_inject(memo = nil)
@@ -109,5 +113,27 @@ module Enumerable
     arr.my_inject { |memo, val| memo * val }
   end
 
-  array = [2, 4, 5]
+  def my_map_modify_1(&proc)
+    i = 0
+    new_map = []
+    while i < self[i]
+      new_map << proc.call(self[i])
+      i += 1
+    end
+    new_map
+  end
+
+  def my_map_modify_2(para = nil)
+    i = 0
+    new_map = []
+    while i < self[i]
+      if para.nil? && block_given?
+        new_map << yield(self[i])
+      elsif !para.nil? && block_given?
+        new_map << proc.call(self[i])
+      end
+      i += 1
+    end
+    new_map
+  end
 end
