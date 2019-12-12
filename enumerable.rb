@@ -19,21 +19,59 @@ def my_each_with_index(array)
 end
 
 def my_select(array)
-    i = 0
-    select_array = []
-    while i < array.size
-         select_array << yield(array[i])
-         i += 1
-    end
-    select_array
+  i = 0
+  select_array = []
+  while i < array.size
+    select_array << yield(array[i])
+    i += 1
+  end
+  select_array
 end
 
+def my_all(array)
+  i = 0
+  result = nil
+  while i < array.size
+    result = if yield(array[i])
+               true
+             else
+               false
+             end
+    i += 1
+  end
+
+  puts result
+end
+
+def my_any(array)
+  i = 0
+  result = nil
+  while i < array.size
+    result = if yield(array[i])
+               true
+             else
+               false
+             end
+    i += 1
+  end
+
+  puts result
+end
+
+def my_none(array)
+  i = 0
+  result = nil
+  while i < array.size
+    result = if yield(array[i])
+               false
+             else
+               true
+             end
+    i += 1
+  end
+
+  puts result
+end
 
 array = %w[hello hi heee]
-my_select(array) do |k| puts "my select #{k}" end
-my_each_with_index(array) do |v, i|
-  puts "#{v}#{i}"
-end
-my_each(array) do |v|
-  puts v.to_s
-end
+my_all(array) { |i| i[0] == 'h' }
