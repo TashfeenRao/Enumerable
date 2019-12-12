@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ModuleLength
+
 module Enumerable
+  # rubocop:disable Metrics/MethodLength
   def my_each
     i = 0
     while i < size
@@ -136,4 +139,7 @@ module Enumerable
     end
     new_map
   end
+  # rubocop:enable Metrics/MethodLength
 end
+
+# rubocop:enable Metrics/ModuleLength
