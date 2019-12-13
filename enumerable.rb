@@ -1,26 +1,31 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ModuleLength
 module Enumerable
   def my_each
+    return to_enum unless block_given?
+
     i = 0
     while i < size
       yield self[i]
       i += 1
     end
-    array
+    self
   end
 
   def my_each_with_index
+    return to_enum unless block_given?
+
     i = 0
     while i < size
       yield(self[i], i)
       i += 1
     end
-    array
+    self
   end
 
   def my_select
+    return to_enum unless block_given?
+
     i = 0
     select_array = []
     while i < size
@@ -30,52 +35,98 @@ module Enumerable
     select_array
   end
 
-  def my_all?
-    i = 0
-    result = nil
-    while i < size
-      result = if yield(self[i])
-                 true
-               else
-                 false
-               end
-      i += 1
+  def my_all?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    result = true
+    current = self
+    if !block_given? && pattern.nil?
+      current.my_each do |item|
+        result = false unless item
+      end
+    elsif pattern.is_a? Regexp
+      current.my_each do |item|
+        result = item =~ pattern
+      end
+    elsif pattern.is_a? Class
+      current.my_each do |item|
+        result = false unless item.is_a? pattern
+      end
+    elsif pattern
+      current.my_each do |item|
+        result = false unless item == pattern
+      end
+    elsif is_a? Array
+      current.my_each do |item|
+        result = false unless yield(item)
+      end
+    elsif is_a? Hash
+      current.my_each do |k, v|
+        result = false unless yield(k, v)
+      end
     end
-
-    result
+    puts result
   end
 
-  def my_any?
-    i = 0
-    result = nil
-    while i < size
-      result = if yield(self[i])
-                 true
-               else
-                 false
-               end
-      i += 1
+  def my_any?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    current = self
+    result = false
+    if !block_given? && pattern.nil?
+      current.my_each do |item|
+        result = true if item
+      end
+    elsif pattern.is_a? Regexp
+      current.my_each do |item|
+        result = true if item =~ pattern
+      end
+    elsif pattern.is_a? Class
+      current.my_each do |item|
+        result = true if item.is_a? pattern
+      end
+    elsif pattern
+      current.my_each do |item|
+        result = true if item == pattern
+      end
+    elsif is_a? Array
+      current.my_each do |item|
+        result = true if yield(item)
+      end
+    elsif is_a? Hash
+      current.my_each do |k, v|
+        result = true if yield(k, v)
+      end
     end
-
-    result
+    puts result
   end
 
-  def my_none?
-    i = 0
-    result = nil
-    while i < size
-      result = if yield(self[i])
-                 false
-               else
-                 true
-               end
-      i += 1
+  def my_none?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    result = true
+    current = self
+    if !block_given? && pattern.nil?
+      current.my_each do |item|
+        result = false if item
+      end
+    elsif pattern.is_a? Class
+      current.my_each do |item|
+        result = false if item.is_a? pattern
+      end
+    elsif pattern.is_a? Regexp
+      current.my_each do |item|
+        result = false if item =~ pattern
+      end
+    elsif pattern.is_a? Array
+      current.my_each do |item|
+        result = false if yield(item)
+      end
+    elsif pattern
+      current.my_each do |item|
+        result = false if item == pattern
+      end
     end
-
-    result
+    puts result
   end
 
   def my_count
+    return to_enum unless block_given?
+
     i = 0
     count = 0
     while i < size
@@ -83,24 +134,24 @@ module Enumerable
       i += 1
     end
 
-    count
+   puts count
   end
 
   def my_map
-    if block_given?
-      i = 0
-      new_map = []
-      while i < size
-        new_map << yield(self[i])
-        i += 1
-      end
-      new_map
-    else
-      puts 'block is not given'
+    return to_enum unless block_given?
+
+    i = 0
+    new_map = []
+    while i < size
+      new_map << yield(self[i])
+      i += 1
     end
+    new_map
   end
 
   def my_inject(memo = nil)
+    return to_enum unless block_given?
+
     i = 0
     memo ||= self[0]
     while i < size
@@ -138,5 +189,4 @@ module Enumerable
     new_map
   end
 end
-
-# rubocop:enable Metrics/ModuleLength
+[1,2,3,4,5].my_count
