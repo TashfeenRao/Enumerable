@@ -45,7 +45,7 @@ module Enumerable
       end
     elsif pattern.is_a? Regexp
       current.my_each do |item|
-        result = true unless pattern =~ item
+        result = true unless pattern == item
       end
     elsif pattern.is_a? Class
       current.my_each do |item|
@@ -64,7 +64,7 @@ module Enumerable
         result = false unless yield(k, v)
       end
     end
-    puts result
+    result
   end
 
   def my_any?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
@@ -99,27 +99,27 @@ module Enumerable
   end
 
   def my_none?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-    result = true
+    result = false
     current = self
     if !block_given? && pattern.nil?
       current.my_each do |item|
-        result = false if item
+        result = true if item
       end
     elsif pattern.is_a? Class
       current.my_each do |item|
-        result = false if item.is_a? pattern
+        result = true if item.is_a? pattern
       end
     elsif pattern.is_a? Regexp
       current.my_each do |item|
-        result = false if item =~ pattern
+        result = true if item =~ pattern
       end
     elsif pattern.is_a? Array
       current.my_each do |item|
-        result = false if yield(item)
+        result = true if yield(item)
       end
     elsif pattern
       current.my_each do |item|
-        result = false if item == pattern
+        result = true if item == pattern
       end
     end
     result
@@ -128,9 +128,9 @@ module Enumerable
   def my_count(parameter = nil)
     count = 0
     if block_given?
-      my_each { |i| count += 1 if yield(self[i]) }
+      my_each { |i| count += 1 if yield(i) }
     elsif !parameter.nil?
-      my_each { |i| count += 1 if self[i] == parameter }
+      my_each { |i| count += 1 if i == parameter }
     else
       count = length
     end
@@ -167,10 +167,6 @@ module Enumerable
     end
   end
 
-  def multiply_els(arr)
-    arr.my_inject { |memo, val| memo * val }
-  end
-
   def my_map_modify_1(&proc)
     i = 0
     new_map = []
@@ -195,5 +191,7 @@ module Enumerable
     new_map
   end
 end
-[1, 2, 3, 4, 5, 6].my_select { |num| num > 3 }
+def multiply_els(arr)
+  arr.my_inject { |memo, val| memo * val }
+end
 # rubocop:enable Metrics/ModuleLength
