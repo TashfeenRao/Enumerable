@@ -65,7 +65,7 @@ module Enumerable
         result = false unless yield(k, v)
       end
     end
-    puts result
+    result
   end
 
   def my_any?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
@@ -96,7 +96,7 @@ module Enumerable
         result = true if yield(k, v)
       end
     end
-    puts result
+    result
   end
 
   def my_none?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
@@ -123,7 +123,7 @@ module Enumerable
         result = false if item == pattern
       end
     end
-    puts result
+    result
   end
 
   def my_count(parameter = nil)
@@ -135,7 +135,7 @@ module Enumerable
     else
       count = length
     end
-    puts count
+    count
   end
 
   def my_map
@@ -153,18 +153,18 @@ module Enumerable
   def my_inject(initial_value = nil, symbol = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     if !initial_value.nil? && !symbol.nil?
       my_each { |num| initial_value = initial_value.method(symbol).call(num) }
-      puts initial_value
+      initial_value
     elsif !initial_value.nil? && initial_value.is_a?(Symbol) && symbol.nil?
       memo, *remaining_elements = self
       remaining_elements.my_each { |num| memo = memo.method(initial_value).call(num) }
-      puts memo
+      memo
     elsif !initial_value.nil? && initial_value.is_a?(Integer) && symbol.nil?
       my_each { |num| initial_value = yield(initial_value, num) }
       initial_value
     elsif initial_value.nil? && symbol.nil?
       initial_value, *remaining_elements = self
       remaining_elements.my_each { |num| initial_value = yield(initial_value, num) }
-      puts initial_value
+      initial_value
     end
   end
 
