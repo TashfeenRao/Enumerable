@@ -46,7 +46,7 @@ module Enumerable
       end
     elsif pattern.is_a? Regexp
       current.my_each do |item|
-        result = item =~ pattern
+        result = true unless pattern =~ item
       end
     elsif pattern.is_a? Class
       current.my_each do |item|
@@ -65,7 +65,7 @@ module Enumerable
         result = false unless yield(k, v)
       end
     end
-    result
+    puts result
   end
 
   def my_any?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
