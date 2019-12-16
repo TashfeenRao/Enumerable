@@ -28,13 +28,12 @@ module Enumerable
   def my_select
     return to_enum unless block_given?
 
-    i = 0
-    select_array = []
-    while i < size
-      select_array << yield(self[i])
-      i += 1
+    is_a?(Array) ? self : to_a
+    temp = []
+    my_each do |j|
+      yield(j) ? temp.push(j) : next
     end
-    select_array
+    temp
   end
 
   def my_all?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
@@ -196,5 +195,5 @@ module Enumerable
     new_map
   end
 end
-
+[1, 2, 3, 4, 5, 6].my_select { |num| num > 3 }
 # rubocop:enable Metrics/ModuleLength
