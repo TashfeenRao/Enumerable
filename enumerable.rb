@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ModuleLength
+
 module Enumerable
   def my_each
     return to_enum unless block_given?
@@ -124,17 +126,16 @@ module Enumerable
     puts result
   end
 
-  def my_count
-    return to_enum unless block_given?
-
-    i = 0
+  def my_count(parameter = nil)
     count = 0
-    while i < size
-      count += 1 if yield(self[i])
-      i += 1
+    if block_given?
+      my_each { |i| count += 1 if yield(self[i]) }
+    elsif !parameter.nil?
+      my_each { |i| count += 1 if self[i] == parameter }
+    else
+      count = length
     end
-
-   puts count
+    puts count
   end
 
   def my_map
@@ -149,16 +150,22 @@ module Enumerable
     new_map
   end
 
-  def my_inject(memo = nil)
-    return to_enum unless block_given?
-
-    i = 0
-    memo ||= self[0]
-    while i < size
-      memo = yield(memo, self[i])
-      i += 1
+  def my_inject(initial_value = nil, symbol = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    if !initial_value.nil? && !symbol.nil?
+      my_each { |num| initial_value = initial_value.method(symbol).call(num) }
+      puts initial_value
+    elsif !initial_value.nil? && initial_value.is_a?(Symbol) && symbol.nil?
+      memo, *remaining_elements = self
+      remaining_elements.my_each { |num| memo = memo.method(initial_value).call(num) }
+      puts memo
+    elsif !initial_value.nil? && initial_value.is_a?(Integer) && symbol.nil?
+      my_each { |num| initial_value = yield(initial_value, num) }
+      initial_value
+    elsif initial_value.nil? && symbol.nil?
+      initial_value, *remaining_elements = self
+      remaining_elements.my_each { |num| initial_value = yield(initial_value, num) }
+      puts initial_value
     end
-    memo
   end
 
   def multiply_els(arr)
@@ -189,4 +196,5 @@ module Enumerable
     new_map
   end
 end
-[1,2,3,4,5].my_count
+
+# rubocop:enable Metrics/ModuleLength
