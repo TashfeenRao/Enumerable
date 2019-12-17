@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-# rubocop:disable Metrics/ModuleLength
+# rubocop:disable all
 
 module Enumerable
   def my_each
@@ -36,35 +34,13 @@ module Enumerable
     temp
   end
 
-  def my_all?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-    result = true
-    current = self
-    if !block_given? && pattern.nil?
-      current.my_each do |item|
-        result = false unless item
-      end
-    elsif pattern.is_a? Regexp
-      current.my_each do |item|
-        result = true unless pattern == item
-      end
-    elsif pattern.is_a? Class
-      current.my_each do |item|
-        result = false unless item.is_a? pattern
-      end
-    elsif pattern
-      current.my_each do |item|
-        result = false unless item == pattern
-      end
-    elsif is_a? Array
-      current.my_each do |item|
-        result = false unless yield(item)
-      end
-    elsif is_a? Hash
-      current.my_each do |k, v|
-        result = false unless yield(k, v)
-      end
-    end
-    result
+  def my_all?(*arg)
+
+    return grep(arg.first).length == size unless arg.empty?
+
+    my_each { |el| return false unless yield(el) } if block_given?
+    my_each { |el| return false unless el } unless block_given?
+    true
   end
 
   def my_any?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
@@ -98,31 +74,12 @@ module Enumerable
     result
   end
 
-  def my_none?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-    result = false
-    current = self
-    if !block_given? && pattern.nil?
-      current.my_each do |item|
-        result = true if item
-      end
-    elsif pattern.is_a? Class
-      current.my_each do |item|
-        result = true if item.is_a? pattern
-      end
-    elsif pattern.is_a? Regexp
-      current.my_each do |item|
-        result = true if item =~ pattern
-      end
-    elsif pattern.is_a? Array
-      current.my_each do |item|
-        result = true if yield(item)
-      end
-    elsif pattern
-      current.my_each do |item|
-        result = true if item == pattern
-      end
-    end
-    result
+  def my_none?(*arg)
+    return grep(arg.first).empty? unless arg.empty?
+
+    my_each { |el| return false if yield(el) } if block_given?
+    my_each { |el| return false if el } unless block_given?
+    true
   end
 
   def my_count(parameter = nil)
@@ -191,7 +148,8 @@ module Enumerable
     new_map
   end
 end
+
 def multiply_els(arr)
   arr.my_inject { |memo, val| memo * val }
 end
-# rubocop:enable Metrics/ModuleLength
+# rubocop:enable all
