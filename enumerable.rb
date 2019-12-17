@@ -148,8 +148,12 @@ module Enumerable
     new_map
   end
 end
-
+range = [5,6,7,8,9,10]
+p expected = range.my_inject(4) { |prod, n| prod * n }
 def multiply_els(arr)
   arr.my_inject { |memo, val| memo * val }
 end
+
+
+
 # rubocop:enable all
