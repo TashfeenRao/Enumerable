@@ -106,22 +106,16 @@ module Enumerable
     new_map
   end
 
-  def my_inject(initial_value = nil, symbol = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-    if !initial_value.nil? && !symbol.nil?
-      my_each { |num| initial_value = initial_value.method(symbol).call(num) }
-     return initial_value
-    elsif !initial_value.nil? && initial_value.is_a?(Symbol) && symbol.nil?
-      memo, *remaining_elements = self
-      remaining_elements.my_each { |num| memo = memo.method(initial_value).call(num) }
-     return memo
-    elsif !initial_value.nil? && initial_value.is_a?(Integer) && symbol.nil?
-      my_each { |num| initial_value = yield(initial_value, num) }
-     return initial_value
-    elsif initial_value.nil? && symbol.nil?
-      initial_value, *remaining_elements = self
-      remaining_elements.my_each { |num| initial_value = yield(initial_value, num) }
-      return initial_value
+  def my_inject(pattern = nil, str = nil)
+    tmp = is_a?(Range) ? to_a : self
+    memo = pattern.nil? || pattern.is_a?(Symbol) ? tmp[0] : pattern
+    if block_given?
+      start = pattern ? 0 : 1
+      tmp[start..-1].my_each { |e| memo = yield(memo, e) }
     end
+    tmp[1..-1].my_each { |e| memo = memo.send(pattern, e) } if acc.is_a?(Symbol)
+    tmp[0..-1].my_each { |e| memo = memo.send(str, e) } if cur
+    memo
   end
 
   def my_map_modify_1(&proc)
