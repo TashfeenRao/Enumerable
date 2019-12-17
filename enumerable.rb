@@ -109,18 +109,18 @@ module Enumerable
   def my_inject(initial_value = nil, symbol = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     if !initial_value.nil? && !symbol.nil?
       my_each { |num| initial_value = initial_value.method(symbol).call(num) }
-      initial_value
+     return initial_value
     elsif !initial_value.nil? && initial_value.is_a?(Symbol) && symbol.nil?
       memo, *remaining_elements = self
       remaining_elements.my_each { |num| memo = memo.method(initial_value).call(num) }
-      memo
+     return memo
     elsif !initial_value.nil? && initial_value.is_a?(Integer) && symbol.nil?
       my_each { |num| initial_value = yield(initial_value, num) }
-      initial_value
+     return initial_value
     elsif initial_value.nil? && symbol.nil?
       initial_value, *remaining_elements = self
       remaining_elements.my_each { |num| initial_value = yield(initial_value, num) }
-      initial_value
+      return initial_value
     end
   end
 
