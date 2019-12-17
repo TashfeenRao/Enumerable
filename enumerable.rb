@@ -113,8 +113,8 @@ module Enumerable
       start = pattern ? 0 : 1
       tmp[start..-1].my_each { |e| memo = yield(memo, e) }
     end
-    tmp[1..-1].my_each { |e| memo = memo.send(pattern, e) } if acc.is_a?(Symbol)
-    tmp[0..-1].my_each { |e| memo = memo.send(str, e) } if cur
+    tmp[1..-1].my_each { |e| memo = memo.send(pattern, e) } if pattern.is_a?(Symbol)
+    tmp[0..-1].my_each { |e| memo = memo.send(str, e) } if str
     memo
   end
 
